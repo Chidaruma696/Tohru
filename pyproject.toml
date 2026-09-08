@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tohru"
+version = "0.1.0"
+description = "Códigos de barras de báscula (EAN-13): identidad por paquete, peso embebido y tolerancia a lectores. Sin dependencias."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "chidaruma696" }]
+keywords = ["ean13", "barcode", "bascula", "scale", "pos", "etiquetas", "plu"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Office/Business :: Financial :: Point-Of-Sale",
+  "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/Chidaruma696/Tohru"
+Issues = "https://github.com/Chidaruma696/Tohru/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+include = ["tohru*"]
+
+[tool.setuptools.package-data]
+tohru = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "tohru"]
+addopts = "-q --doctest-modules"
