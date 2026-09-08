@@ -1,54 +1,54 @@
-[🇪🇸 Español](README.es.md)
+[🇬🇧 English](README.en.md)
 
 <div align="center">
   <br/>
 
 # Tohru
 
-**符 · Scale barcodes for Python, with no dependencies.**
+**符 · Códigos de barras de báscula para Python, sin dependencias.**
 
 <br/>
 
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776ab?style=for-the-badge&logo=python&logoColor=white)
 [![CI](https://img.shields.io/github/actions/workflow/status/Chidaruma696/Tohru/ci.yml?branch=main&style=for-the-badge&label=pytest)](https://github.com/Chidaruma696/Tohru/actions)
-![No dependencies](https://img.shields.io/badge/dependencies-0-1b150d?style=for-the-badge)
-![MIT License](https://img.shields.io/badge/license-MIT-1b150d?style=for-the-badge)
+![Sin dependencias](https://img.shields.io/badge/dependencias-0-1b150d?style=for-the-badge)
+![Licencia MIT](https://img.shields.io/badge/licencia-MIT-1b150d?style=for-the-badge)
 
 <br/>
 
-*EAN-13 · per-package identity · embedded weight · scanner tolerance*
+*EAN-13 · identidad por paquete · peso embebido · tolerancia a lectores*
 
 </div>
 
 ---
 
 > [!NOTE]
-> Tohru is the Python half of a pair: **[Kana](https://github.com/Chidaruma696/Kana)** reads the scale from the browser and Tohru puts a code on whatever it weighed. Each one stands on its own; together they cover the full weigh, label and scan-back flow.
+> Tohru es la mitad Python de un par: **[Kana](https://github.com/Chidaruma696/Kana)** lee la báscula desde el navegador y Tohru le pone código a lo que pesó. Cada una vive sola; juntas cubren el flujo completo de pesar, etiquetar y volver a leer.
 
 <br/>
 
-## ⚖️ What it is
+## ⚖️ Qué es
 
-When you weigh a product and print a barcode label for it, there are two ways to encode it:
+Cuando pesas un producto y le imprimes una etiqueta con código de barras, tienes dos formas de codificarlo:
 
-| 🔢 Classic variable-weight | 🪪 Identity |
+| 🔢 Pesable clásico | 🪪 Identidad |
 | --- | --- |
-| `[prefix][PLU][weight]` | `[prefix][PLU][sequence]` |
-| The weight travels in the digits | The weight lives in your database |
-| Two identical packages share a code | Every package gets its own, always |
-| No database needed to ring it up | You can void, count and trace every single item |
+| `[prefijo][PLU][peso]` | `[prefijo][PLU][secuencia]` |
+| El peso viaja en los dígitos | El peso vive en tu base de datos |
+| Dos paquetes iguales comparten código | Cada paquete tiene el suyo, siempre |
+| No necesitas base para cobrar | Puedes anular, contar y rastrear cada pieza |
 
-Tohru implements both, plus everything needed around them: the EAN-13 check digit, and tolerance for handheld scanners that swallow the leading zero or the check digit. Everything is pure functions over strings; the code is never converted to an integer, because leading zeros carry meaning.
+Tohru implementa las dos, más lo que hace falta alrededor: el dígito verificador EAN-13, y la tolerancia a lectores de mano que se comen el cero inicial o el verificador. Todo son funciones puras sobre cadenas; nunca convierte el código a entero, porque los ceros a la izquierda significan.
 
 <br/>
 
-## 📲 Install
+## 📲 Instalar
 
 ```bash
 pip install tohru
 ```
 
-Until it's on PyPI, straight from the repository:
+Mientras no esté en PyPI, directo del repositorio:
 
 ```bash
 pip install git+https://github.com/Chidaruma696/Tohru.git
@@ -56,44 +56,44 @@ pip install git+https://github.com/Chidaruma696/Tohru.git
 
 <br/>
 
-## 🧪 Usage
+## 🧪 Uso
 
-### Per-package identity
+### Identidad por paquete
 
 ```python
 from tohru import barcode_identidad, descomponer, PREFIJO_PESADA
 
-# Reserve the sequence BEFORE saving the row (a counter in your database) and
-# save the row with its code already set: there is no intermediate state without a code.
-secuencia = siguiente_secuencia()            # your database, your counter
+# Reserva la secuencia ANTES de guardar la fila (un contador en tu base) y
+# guarda la fila ya con su código: no hay estado intermedio sin código.
+secuencia = siguiente_secuencia()            # tu base, tu contador
 codigo = barcode_identidad(PREFIJO_PESADA, plu=90050, secuencia=secuencia)
 # '0890050490063'
 
 descomponer("0890050490063")                 # ('08', 90050, 49006)
-descomponer("890050490063")                  # the scanner swallowed the 0: same result
+descomponer("890050490063")                  # el lector se comió el 0: mismo resultado
 ```
 
-The sequence is five digits: a hundred thousand codes per prefix. Tohru tells you how much is left so it doesn't catch you by surprise:
+La secuencia son cinco dígitos: cien mil códigos por prefijo. Tohru te dice cuánto queda para que no te sorprenda:
 
 ```python
 from tohru import estado_secuencia
 
 e = estado_secuencia(ultima_secuencia=49_005)
 e.restantes                 # 50994
-e.meses_restantes(2_850)    # 17.9 months at that rate → switch prefixes before then
+e.meses_restantes(2_850)    # 17.9 meses a ese ritmo → cambia de prefijo antes
 ```
 
-### Classic variable-weight
+### Pesable clásico
 
 ```python
 from tohru import decodificar, barcode_pesable
 
 decodificar("2000023012507")       # Pesable(plu=23, peso_kg=12.5, prefijo='20')
-decodificar("0890050490063")       # None: it's an identity code, the weight is NOT in the digits
-barcode_pesable("20", plu=5080, peso_kg=1.257)   # '2050800012' + check digit, rounded to hundredths
+decodificar("0890050490063")       # None: es de identidad, el peso NO está en los dígitos
+barcode_pesable("20", plu=5080, peso_kg=1.257)   # '2050800012' + verificador, redondeado a centésimas
 ```
 
-### Scanning with tolerance
+### Escanear con tolerancia
 
 ```python
 from tohru import variantes, preferir_viva
@@ -101,48 +101,48 @@ from tohru import variantes, preferir_viva
 cands = variantes("750105922482")
 # ['750105922482', '7501059224827', '0750105922482']
 filas = db.execute("SELECT * FROM etiquetas WHERE barcode IN (...)", cands)
-fila = preferir_viva(filas)        # if there are twins, the one still alive wins
+fila = preferir_viva(filas)        # si hay gemelas, gana la que sigue viva
 ```
 
-`variantes` covers what a handheld scanner gets wrong: delivering 12 digits without the check digit, reading an EAN-13 as UPC-A without the zero, or both at once (11 digits). `preferir_viva` keeps a voided label with the same code from hijacking the scan of the one you're holding.
+`variantes` cubre lo que un lector de mano hace mal: entregar 12 dígitos sin verificador, leer un EAN-13 como UPC-A sin el cero, o las dos cosas a la vez (11 dígitos). `preferir_viva` evita que una etiqueta anulada con el mismo código secuestre el escaneo de la que tienes en la mano.
 
 <br/>
 
 ## 🔧 API
 
-| Module | Function | What it does |
+| Módulo | Función | Qué hace |
 | --- | --- | --- |
-| `tohru.ean13` | `digito_verificador(base12)` | EAN-13 check digit for a twelve-digit base |
-| | `completar(base12)` | Base plus check digit |
-| | `es_valido(codigo)` | Thirteen digits with a correct check digit |
-| | `solo_digitos(texto)` | Strips spaces and symbols |
-| `tohru.identidad` | `barcode_identidad(prefijo, plu, secuencia)` | Identity code |
-| | `descomponer(codigo)` | `(prefijo, plu, secuencia)` or `None` |
-| | `es_identidad(codigo)` | Prefixes 07/08, with or without the leading zero |
-| | `estado_secuencia(ultima)` | How much is left before wraparound |
-| `tohru.pesable` | `decodificar(codigo, centesimas=True)` | `Pesable(plu, peso_kg, prefijo)` or `None` |
-| | `barcode_pesable(prefijo, plu, peso_kg)` | Classic code with embedded weight |
-| `tohru.lector` | `variantes(codigo)` | The forms a scanner may have delivered it in |
-| | `preferir_viva(filas, vivos=...)` | The live row among twins |
+| `tohru.ean13` | `digito_verificador(base12)` | Verificador EAN-13 de doce dígitos |
+| | `completar(base12)` | Base más verificador |
+| | `es_valido(codigo)` | Trece dígitos con verificador correcto |
+| | `solo_digitos(texto)` | Limpia espacios y símbolos |
+| `tohru.identidad` | `barcode_identidad(prefijo, plu, secuencia)` | Código de identidad |
+| | `descomponer(codigo)` | `(prefijo, plu, secuencia)` o `None` |
+| | `es_identidad(codigo)` | Prefijos 07/08, con o sin cero inicial |
+| | `estado_secuencia(ultima)` | Cuánto queda antes de la vuelta |
+| `tohru.pesable` | `decodificar(codigo, centesimas=True)` | `Pesable(plu, peso_kg, prefijo)` o `None` |
+| | `barcode_pesable(prefijo, plu, peso_kg)` | Código clásico con peso embebido |
+| `tohru.lector` | `variantes(codigo)` | Formas en que un lector pudo entregarlo |
+| | `preferir_viva(filas, vivos=...)` | La fila viva entre gemelas |
 
-The `08` (weighing) and `07` (box) prefixes are just the defaults. Any pair of digits that doesn't collide with your commercial GTINs will do; GS1 reserves `20` through `29` for in-store use.
+Los prefijos `08` (pesada) y `07` (caja) son solo el valor por defecto. Vale cualquier par de dígitos que no choque con tus GTIN comerciales; GS1 reserva `20` a `29` para uso interno de la tienda.
 
 <br/>
 
-## 🔬 Development
+## 🔬 Desarrollo
 
 ```bash
 git clone https://github.com/Chidaruma696/Tohru.git
 cd Tohru
 pip install -e .[dev]
-pytest          # 22 tests plus the doctests
+pytest          # 22 pruebas más los doctests
 ```
 
-No runtime dependencies, typed (`py.typed`), Python 3.10 through 3.13 in CI.
+Sin dependencias en tiempo de ejecución, tipado (`py.typed`), Python 3.10 a 3.13 en CI.
 
 <br/>
 
-## ⚖️ License
+## ⚖️ Licencia
 
 [MIT](LICENSE).
 
@@ -150,7 +150,7 @@ No runtime dependencies, typed (`py.typed`), Python 3.10 through 3.13 in CI.
 
 <div align="center">
 
-*Every package with its own name.*
+*Cada paquete con su nombre.*
 
 符 · ふ
 
