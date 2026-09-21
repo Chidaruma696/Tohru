@@ -106,6 +106,19 @@ fila = preferir_viva(filas)        # si hay gemelas, gana la que sigue viva
 
 `variantes` cubre lo que un lector de mano hace mal: entregar 12 dígitos sin verificador, leer un EAN-13 como UPC-A sin el cero, o las dos cosas a la vez (11 dígitos). `preferir_viva` evita que una etiqueta anulada con el mismo código secuestre el escaneo de la que tienes en la mano.
 
+### Desde la terminal
+
+Para probar una etiqueta sin abrir Python:
+
+```bash
+$ python -m tohru 0890050490063 2000023012507 750105922482
+0890050490063  identidad  prefijo=08 plu=90050 secuencia=49006
+2000023012507  pesable    prefijo=20 plu=23 peso=12.5 kg
+750105922482   inválido   quizá el lector lo mutiló; prueba 7501059224827 0750105922482
+```
+
+Sale con 1 si algún código no se entendió.
+
 <br/>
 
 ## 🔧 API
@@ -135,7 +148,7 @@ Los prefijos `08` (pesada) y `07` (caja) son solo el valor por defecto. Vale cua
 git clone https://github.com/Chidaruma696/Tohru.git
 cd Tohru
 pip install -e .[dev]
-pytest          # 22 pruebas más los doctests
+pytest          # 25 pruebas, doctests incluidos
 ```
 
 Sin dependencias en tiempo de ejecución, tipado (`py.typed`), Python 3.10 a 3.13 en CI.

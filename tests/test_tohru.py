@@ -154,3 +154,26 @@ def test_preferir_viva_gana_la_viva_aunque_no_sea_la_primera():
     assert preferir_viva([muerta]) is muerta
     assert preferir_viva([]) is None
     assert preferir_viva([{"estado": "cerrada"}], vivos=("abierta", "cerrada"))["estado"] == "cerrada"
+
+
+# --- python -m tohru -------------------------------------------------------
+
+from tohru.__main__ import describir, main
+
+
+def test_cli_describe_identidad_y_pesable():
+    assert describir("0890050490063").startswith("identidad  prefijo=08 plu=90050 secuencia=49006")
+    assert describir("2000023012507").startswith("pesable    prefijo=20 plu=23 peso=12.5 kg")
+
+
+def test_cli_describe_invalidos():
+    assert describir("2000023012508").startswith("inválido   verificador")
+    assert describir("hola") == "inválido"
+
+
+def test_cli_codigo_de_salida(capsys):
+    assert main(["0890050490063"]) == 0
+    assert main(["0890050490063", "hola"]) == 1
+    assert main([]) == 2
+    salida = capsys.readouterr().out
+    assert "identidad" in salida and "inválido" in salida

@@ -106,6 +106,19 @@ fila = preferir_viva(filas)        # if there are twins, the one still alive win
 
 `variantes` covers what a handheld scanner gets wrong: delivering 12 digits without the check digit, reading an EAN-13 as UPC-A without the zero, or both at once (11 digits). `preferir_viva` keeps a voided label with the same code from hijacking the scan of the one you're holding.
 
+### From the terminal
+
+To check a label without opening Python:
+
+```bash
+$ python -m tohru 0890050490063 2000023012507 750105922482
+0890050490063  identidad  prefijo=08 plu=90050 secuencia=49006
+2000023012507  pesable    prefijo=20 plu=23 peso=12.5 kg
+750105922482   inválido   quizá el lector lo mutiló; prueba 7501059224827 0750105922482
+```
+
+Exits with 1 if any code was not understood.
+
 <br/>
 
 ## 🔧 API
@@ -135,7 +148,7 @@ The `08` (weighing) and `07` (box) prefixes are just the defaults. Any pair of d
 git clone https://github.com/Chidaruma696/Tohru.git
 cd Tohru
 pip install -e .[dev]
-pytest          # 22 tests plus the doctests
+pytest          # 25 tests, doctests included
 ```
 
 No runtime dependencies, typed (`py.typed`), Python 3.10 through 3.13 in CI.
